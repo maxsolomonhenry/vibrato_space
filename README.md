@@ -1,7 +1,7 @@
 # Vibrato Perceptual Space
 
 A collection of scripts for developing stimuli and running an experiment:
-
+```
 .
 ├── LICENSE
 ├── README.md
@@ -14,3 +14,4 @@ A collection of scripts for developing stimuli and running an experiment:
     ├── synthesis.py	--> generate stimuli from pitch trajectory with
 	│						hamonic oscillator. applies AR filter.
     └── util.py
+```
