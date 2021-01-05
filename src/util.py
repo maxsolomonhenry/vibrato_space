@@ -45,8 +45,51 @@ def midi_to_hz(midi: np.ndarray) -> np.ndarray:
     return 440.0 * (2.0**((midi - 69.0) / 12.0))
 
 
-def repitch(midi: np.ndarray, pitch: float=60) -> np.ndarray:
+def repitch(
+    midi: np.ndarray,
+    pitch: float = 60,
+) -> np.ndarray:
     """
         Recenters midi trajectory around a given pitch.
     """
     return midi - np.mean(midi) + pitch
+
+
+def add_fade(
+    signal: np.ndarray,
+    fade_length: float,
+    rate: int
+):
+    """
+        Adds raised cosine fade in/out to signal.
+    """
+    num_samples = int(fade_length * rate)
+
+    # Build ramp.
+    t = np.linspace(0, 0.5, num_samples, endpoint=False)
+    ramp = 0.5 * np.cos(2 * np.pi * t) + 0.5
+
+    mean = np.mean(signal)
+    signal -= mean
+
+    # Fade in/out.
+    signal[:num_samples] *= ramp[::-1]
+    signal[-num_samples:] *= ramp
+
+    signal += mean
+
+    return signal
+
+
+def trim_excerpt(
+    signal: np.ndarray,
+    time_in: float = 1,
+    duration: float = 1,
+    rate: float = 44100
+) -> np.ndarray:
+    """
+        Trim audio signal given start time and desired duration.
+    """
+    in_ = int(time_in * rate)
+    out_ = in_ + int(duration * rate)
+    return signal[in_:out_]
