@@ -1,4 +1,8 @@
-# Excerpt extraction, pitch analysis, and LPC analysis.
+"""
+    Excerpt extraction, pitch analysis, and LPC analysis.
+
+    TODO: - argparse hell.
+"""
 
 import glob
 import os
@@ -13,8 +17,9 @@ from defaults import PITCH_RATE
 
 DEBUG = True
 
+PATH_TO_HERE = os.path.dirname(__file__)
 pitch_frame_dur = int(1/PITCH_RATE * 1000)
-path_pattern = '../audio/raw/**/*.wav'
+path_pattern = os.path.join(PATH_TO_HERE,'../audio/raw/**/*.wav')
 file_paths = glob.glob(path_pattern)
 
 if DEBUG:
