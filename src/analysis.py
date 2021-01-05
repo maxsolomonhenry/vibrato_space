@@ -40,7 +40,7 @@ for path in file_paths:
     midi = repitch(midi, 60)
     midi = add_fade(midi, fade_duration, rate=PITCH_RATE)
 
-    trajectories.append({'path': path, 'midi': midi})
+    trajectories.append({'filename': os.path.basename(path), 'midi': midi})
 
     if DEBUG:
         plt.plot(midi)
