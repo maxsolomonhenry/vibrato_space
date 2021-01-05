@@ -1,5 +1,5 @@
-# Building signals from AR cofficients and pitch trajectories.
+# Building signals from AR coefficients and pitch trajectories.
 
-from analysis import trajectories
+from src.analysis import trajectories
 
 print(trajectories)

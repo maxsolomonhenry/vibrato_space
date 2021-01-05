@@ -1,7 +1,8 @@
 # Misc. utilities as needed.
 import numpy as np
 import matplotlib.pyplot as plt
-from defaults import EPS
+from src.defaults import EPS
+from scipy.signal import hilbert
 
 
 def normalize(x: np.ndarray) -> np.ndarray:
@@ -11,12 +12,13 @@ def normalize(x: np.ndarray) -> np.ndarray:
     return x/np.max(np.abs(x))
 
 
-def time_plot(signal: np.ndarray, rate: int = 44100):
+def time_plot(signal: np.ndarray, rate: int = 44100, show: bool = True):
     t = np.linspace(0, len(signal)/rate, len(signal), endpoint=False)
     plt.plot(t, signal)
     plt.xlabel('time (s)')
     plt.ylabel('amplitude')
-    plt.show()
+    if show:
+        plt.show()
 
 
 def force_mono(signal: np.ndarray) -> np.ndarray:
@@ -93,3 +95,21 @@ def trim_excerpt(
     in_ = int(time_in * rate)
     out_ = in_ + int(duration * rate)
     return signal[in_:out_]
+
+
+def trim_silence(
+    signal: np.ndarray,
+    threshold: float = -35,
+    smoothing: int = 1024
+) -> np.ndarray:
+    """
+        Trims beginning of audio signal until it passes a given threshold in dB.
+    """
+    amplitude_envelope = np.abs(hilbert(signal))
+    smoothed = np.convolve(amplitude_envelope, np.ones(smoothing)/smoothing)
+    log_envelope = np.log(smoothed + EPS)
+    start_index = np.maximum(
+        np.where(log_envelope >= threshold)[0][0] - smoothing//2,
+        0
+    )
+    return signal[start_index:]
