@@ -137,7 +137,7 @@ def stft_plot(
     Xdb = librosa.amplitude_to_db(abs(X))
     plt.figure(figsize=(5, 5))
     plt.title(title)
-    librosa.display.specshow(Xdb, sr=sample_rate, x_axis="time", y_axis="log")
+    librosa.display.specshow(Xdb, sr=sample_rate, x_axis="time", y_axis="linear")
     if show:
         plt.show()
 

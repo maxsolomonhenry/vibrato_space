@@ -21,9 +21,6 @@ from src.defaults import PITCH_RATE, PICKLE_PATH
 from src.util import (
     normalize,
     force_mono,
-    hz_to_midi,
-    repitch,
-    add_fade,
     trim_excerpt,
     trim_silence
 )
@@ -51,13 +48,6 @@ parser.add_argument(
     type=float,
     default=1.75,
     help='Duration of pitch trajectory in seconds.'
-)
-parser.add_argument(
-    '-f',
-    '--pitch_fade',
-    type=float,
-    default=0.125,
-    help='Fade in/out duration in seconds.'
 )
 parser.add_argument(
     '-a',
@@ -103,24 +93,21 @@ for path in tqdm(file_paths):
 
     lpc_coefficients = lpc(x, order=args.lpc_order)
 
-    midi = hz_to_midi(frequency)
-    midi = repitch(midi, 60)
-    midi = add_fade(midi, args.pitch_fade, rate=PITCH_RATE)
-
     data.append(
         {
             'filename': os.path.basename(path),
-            'midi': midi,
+            'frequency': frequency,
             'lpc': lpc_coefficients
         }
     )
 
     if args.DEBUG:
-        plt.plot(midi)
+        plt.plot(frequency)
 
 if args.DEBUG:
     plt.show()
 
 if args.make_pickle:
+    print('Saving pickle at {}'.format(PICKLE_PATH))
     with open(PICKLE_PATH, 'wb') as handle:
         pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
