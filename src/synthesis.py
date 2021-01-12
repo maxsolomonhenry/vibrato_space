@@ -8,11 +8,24 @@
 import numpy as np
 import pickle
 import os
-from tqdm import tqdm
 from scipy.signal import lfilter
 from scipy.io import wavfile
-from src.util import midi_to_hz, to_sample_rate, normalize, add_fade, fix_deviation
-from src.defaults import PICKLE_PATH, PROCESSED_PATH, SAMPLE_RATE, EPS
+from src.util import (
+    midi_to_hz,
+    to_sample_rate,
+    normalize,
+    add_fade,
+    fix_deviation,
+    hz_to_midi,
+    repitch
+)
+from src.defaults import (
+    PICKLE_PATH,
+    PROCESSED_PATH,
+    SAMPLE_RATE,
+    EPS,
+    PITCH_RATE
+)
 
 
 class Blit:
@@ -69,7 +82,9 @@ if __name__ == '__main__':
     VERBOSE = True
 
     pitch_deviation = 0.15
-    fade_time = 0.25
+    audio_fade = 0.25
+    pitch_fade = 0.125
+    repitch_note = 52
 
     assert os.path.isfile(PICKLE_PATH), 'Missing pickle. Run analysis.py'
 
@@ -82,7 +97,10 @@ if __name__ == '__main__':
     blit = Blit()
 
     for datum in data:
-        pitch = datum['midi']
+        pitch = datum['frequency']
+        pitch = hz_to_midi(pitch)
+        pitch = repitch(pitch, repitch_note)
+        pitch = add_fade(pitch, pitch_fade, rate=PITCH_RATE)
 
         pitch = fix_deviation(pitch, pitch_deviation)
         pitch = midi_to_hz(pitch)
@@ -93,7 +111,7 @@ if __name__ == '__main__':
         # audio = lfilter([1], data[6]['lpc'], audio)
 
         audio = normalize(audio)
-        audio = add_fade(audio, fade_time, rate=SAMPLE_RATE)
+        audio = add_fade(audio, audio_fade, rate=SAMPLE_RATE)
 
         filename = "proc_" + datum['filename']
         write_path = os.path.join(PROCESSED_PATH, filename)
