@@ -40,6 +40,9 @@ class Blit:
         self.output = []
 
     def __call__(self, hz: np.ndarray) -> np.ndarray:
+        """
+        Accepts sample-rate array of fundamental frequency to re-synthesize.
+        """
         self.reset()
 
         for frequency in hz:
@@ -81,10 +84,10 @@ class Blit:
 if __name__ == '__main__':
     VERBOSE = True
 
-    pitch_deviation = 0.15
+    # pitch_deviation = 0.15
     audio_fade = 0.25
     pitch_fade = 0.125
-    repitch_note = 52
+    repitch_note = 48
 
     assert os.path.isfile(PICKLE_PATH), 'Missing pickle. Run analysis.py'
 
@@ -102,13 +105,12 @@ if __name__ == '__main__':
         pitch = repitch(pitch, repitch_note)
         pitch = add_fade(pitch, pitch_fade, rate=PITCH_RATE)
 
-        pitch = fix_deviation(pitch, pitch_deviation)
+        # pitch = fix_deviation(pitch, pitch_deviation)
         pitch = midi_to_hz(pitch)
         pitch = to_sample_rate(pitch)
 
         audio = blit(pitch)
         audio = lfilter([1], average_coefficients, audio)
-        # audio = lfilter([1], data[6]['lpc'], audio)
 
         audio = normalize(audio)
         audio = add_fade(audio, audio_fade, rate=SAMPLE_RATE)

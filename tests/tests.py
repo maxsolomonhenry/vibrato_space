@@ -7,6 +7,8 @@ from scipy.io import wavfile
 from scipy.signal import lfilter, freqz
 
 from src.util import *
+from src.defaults import SAMPLE_RATE
+from src.synthesis import Blit
 
 
 PATH_TO_HERE = os.path.dirname(__file__)
@@ -36,8 +38,12 @@ def test_lpc(x, order=12):
 
 
 if __name__ == '__main__':
-    for path in reversed(file_paths):
-        sr, x = my_read_wav(path)
+    # for path in reversed(file_paths):
+    #     sr, x = my_read_wav(path)
 
-        # test_trim_silence(x)
-        # test_lpc(x)
+    #     test_trim_silence(x)
+    #     test_lpc(x)
+
+    blit = Blit()
+    chirp = blit(np.linspace(440, 880, 2*SAMPLE_RATE, endpoint=False))
+    stft_plot(chirp)

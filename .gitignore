@@ -137,6 +137,8 @@ dmypy.json
 *.mp3
 *.ogg
 *.pickle
+*.png
+*.pdf
 
 # Please use Jupytext to auto-convert jupyter notebooks to
 # python.
