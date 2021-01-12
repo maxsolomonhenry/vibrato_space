@@ -63,7 +63,7 @@ parser.add_argument(
     '-a',
     '--lpc_order',
     type=int,
-    default=30,
+    default=50,
     help='The number of AR coefficients to predict.'
 )
 parser.add_argument(

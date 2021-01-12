@@ -133,7 +133,7 @@ dmypy.json
 
 # Please don't check large assets into the git repo without
 # discussing it first.
-# *.wav
+*.wav
 *.mp3
 *.ogg
 

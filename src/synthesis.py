@@ -14,6 +14,7 @@ from scipy.io import wavfile
 from src.util import midi_to_hz, to_sample_rate, normalize, add_fade, fix_deviation
 from src.defaults import PICKLE_PATH, PROCESSED_PATH, SAMPLE_RATE, EPS
 
+
 class Blit:
     """
     Band-limited impulse train.
@@ -67,7 +68,7 @@ class Blit:
 if __name__ == '__main__':
     VERBOSE = True
 
-    pitch_deviation = 0.5
+    pitch_deviation = 0.15
     fade_time = 0.25
 
     assert os.path.isfile(PICKLE_PATH), 'Missing pickle. Run analysis.py'
@@ -81,13 +82,15 @@ if __name__ == '__main__':
     blit = Blit()
 
     for datum in data:
-        pitch = fix_deviation(datum['midi'], pitch_deviation)
+        pitch = datum['midi']
+
+        pitch = fix_deviation(pitch, pitch_deviation)
         pitch = midi_to_hz(pitch)
         pitch = to_sample_rate(pitch)
 
         audio = blit(pitch)
         audio = lfilter([1], average_coefficients, audio)
-        # audio = lfilter([1], fixed_coefficients, audio)
+        # audio = lfilter([1], data[6]['lpc'], audio)
 
         audio = normalize(audio)
         audio = add_fade(audio, fade_time, rate=SAMPLE_RATE)
