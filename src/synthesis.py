@@ -10,6 +10,7 @@ import pickle
 import os
 from scipy.signal import lfilter
 from scipy.io import wavfile
+from src.oscillators import Blit, AdditiveOsc
 from src.util import (
     midi_to_hz,
     to_sample_rate,
@@ -26,59 +27,6 @@ from src.defaults import (
     EPS,
     PITCH_RATE
 )
-
-
-class Blit:
-    """
-    Band-limited impulse train.
-
-    This code basically a carbon copy of STK's BLIT class. Thanks Gary.
-    """
-
-    def __init__(self):
-        self.phase = 0
-        self.output = []
-
-    def __call__(self, hz: np.ndarray) -> np.ndarray:
-        """
-        Accepts sample-rate array of fundamental frequency to re-synthesize.
-        """
-        self.reset()
-
-        for frequency in hz:
-            p_, rate_ = self.set_frequency(frequency)
-            m_ = self.update_harmonics(p_)
-
-            denominator = np.sin(np.pi * self.phase)
-
-            if denominator <= EPS:
-                temp = 1
-            else:
-                temp = np.sin(m_ * np.pi * self.phase)
-                temp /= m_ * denominator
-
-            self.phase += rate_
-
-            if self.phase >= 1:
-                self.phase -= 1
-
-            self.output.append(temp)
-        return np.array(self.output) - np.mean(self.output)
-
-    def reset(self):
-        self.phase = 0
-        self.output = []
-
-    @staticmethod
-    def set_frequency(frequency):
-        p_ = SAMPLE_RATE / frequency
-        rate_ = 1 / p_
-        return p_, rate_
-
-    @staticmethod
-    def update_harmonics(p_):
-        max_harmonics = np.floor(0.5 * p_)
-        return 2 * max_harmonics + 1
 
 
 if __name__ == '__main__':
@@ -98,6 +46,7 @@ if __name__ == '__main__':
     average_coefficients = np.array([d['lpc'] for d in data if d['filename'].split('_')[0] != 'm1']).mean(axis=0)
 
     blit = Blit()
+    additive = AdditiveOsc(num_harmonics=25)
 
     for datum in data:
         pitch = datum['frequency']
@@ -109,7 +58,7 @@ if __name__ == '__main__':
         pitch = midi_to_hz(pitch)
         pitch = to_sample_rate(pitch)
 
-        audio = blit(pitch)
+        audio = additive(pitch)
         audio = lfilter([1], average_coefficients, audio)
 
         audio = normalize(audio)

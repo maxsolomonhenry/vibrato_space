@@ -8,8 +8,7 @@ from scipy.signal import lfilter, freqz
 
 from src.util import *
 from src.defaults import SAMPLE_RATE
-from src.synthesis import Blit
-
+from src.synthesis import Blit, AdditiveOsc
 
 PATH_TO_HERE = os.path.dirname(__file__)
 path_pattern = os.path.join(PATH_TO_HERE, '../audio/raw/**/*.wav')
@@ -44,6 +43,10 @@ if __name__ == '__main__':
     #     test_trim_silence(x)
     #     test_lpc(x)
 
-    blit = Blit()
-    chirp = blit(np.linspace(440, 880, 2*SAMPLE_RATE, endpoint=False))
+    # blit = Blit()
+    # chirp = blit(np.linspace(440, 880, 2*SAMPLE_RATE, endpoint=False))
+    # stft_plot(chirp)
+
+    additive = AdditiveOsc(num_harmonics=25)
+    chirp = additive(np.linspace(440, 880, 2*SAMPLE_RATE, endpoint=False))
     stft_plot(chirp)
