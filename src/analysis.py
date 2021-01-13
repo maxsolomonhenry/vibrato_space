@@ -17,7 +17,7 @@ from scipy.io import wavfile
 from librosa.core import lpc
 from tqdm import tqdm
 
-from src.defaults import PITCH_RATE, PICKLE_PATH
+from src.defaults import PITCH_RATE, PICKLE_PATH, RAW_AUDIO_PATH
 from src.util import (
     normalize,
     force_mono,
@@ -70,7 +70,7 @@ pitch_frame_dur = 1/PITCH_RATE * 1000
 
 # Find audio files.
 PATH_TO_HERE = os.path.dirname(__file__)
-path_pattern = os.path.join(PATH_TO_HERE, '../audio/raw/**/*.wav')
+path_pattern = os.path.join(PATH_TO_HERE, RAW_AUDIO_PATH)
 file_paths = glob.glob(path_pattern)
 
 data = []
@@ -96,6 +96,7 @@ for path in tqdm(file_paths):
     data.append(
         {
             'filename': os.path.basename(path),
+            'audio': x,
             'frequency': frequency,
             'lpc': lpc_coefficients
         }

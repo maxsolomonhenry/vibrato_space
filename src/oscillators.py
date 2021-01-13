@@ -4,10 +4,9 @@ from src.util import normalize, fix_length
 
 
 class Blit:
-    """
-    Band-limited impulse train.
+    """Band-limited impulse train.
 
-    This code basically a carbon copy of STK's BLIT class. Thanks Gary.
+    STK's BLIT class ported from C++ and slightly modified. Thanks Gary.
     """
 
     def __init__(self):
@@ -61,7 +60,7 @@ class AdditiveOsc:
     Oscillator that adds a given number of harmonics. Call accepts an array of
     instantaneous frequency, outputs audio.
 
-    Uses technique to account for accumulation error. See:
+    Uses technique to account for accumulation error. With apologies to:
 
     Abe, Toshihiko, and Masaaki Honda. "Sinusoidal model based on instantaneous
         frequency attractors." IEEE Transactions on Audio, Speech, and Language
@@ -84,8 +83,14 @@ class AdditiveOsc:
         return normalize(x)
 
     def hz_to_phase(self, hz: np.ndarray) -> np.ndarray:
-        """
-        Intelligent cumsum that cleans up accumulation error.
+        """ Cumulative sum that side-steps accumulation error.
+
+        A simple version of this function goes as follows:
+
+        np.cumsum(2 * np.pi * hz / SAMPLE_RATE)
+
+        I.e., accumulate instantaneous frequency (to generate phase.) The method
+        below does this calculation in chunks, to avoid accumulation error.
         """
 
         hz = 2 * np.pi * hz / SAMPLE_RATE
