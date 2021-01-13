@@ -66,7 +66,7 @@ parser.add_argument(
 args = parser.parse_args()
 
 # Calculation for CREPE.
-pitch_frame_dur = int(1/PITCH_RATE * 1000)
+pitch_frame_dur = 1/PITCH_RATE * 1000
 
 # Find audio files.
 PATH_TO_HERE = os.path.dirname(__file__)
