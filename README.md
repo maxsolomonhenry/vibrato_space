@@ -7,11 +7,20 @@ A collection of scripts for developing stimuli and running an experiment:
 ├── README.md
 ├── audio
 │   ├── processed
-│   └── raw
-└── src
-    ├── analysis.py     --> get pitch trajectory and spectral envelope of
-    │                       vibrato-stable excerpts.
-    ├── synthesis.py    --> generate stimuli from pitch trajectory with
-    │                       hamonic oscillator. applies AR filter.
-    └── util.py
+│   ├── raw
+│   └── tests
+├── data
+├── figs
+├── src
+│   ├── __init__.py
+│   ├── analysis.py     --> scans contents of audio/raw and makes .pickle
+│   ├── defaults.py
+│   ├── oscillators.py
+│   ├── synthesis.py    --> reads .pickle to create stimuli
+│   └── util.py
+└── tests
+    ├── __init__.py
+    ├── pitch_compare.py
+    └── tests.py
+
 ```
