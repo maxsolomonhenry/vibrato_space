@@ -35,6 +35,20 @@ def force_mono(signal: np.ndarray) -> np.ndarray:
     return signal
 
 
+def fix_length(signal: np.array, length: int) -> np.array:
+    """
+    Pad or truncate array to specified length.
+    """
+
+    assert signal.ndim == 1
+    if len(signal) < length:
+        signal = np.pad(signal, [0, length - len(signal)])
+    elif len(signal) > length:
+        signal = signal[:length]
+    assert signal.shape == (length,)
+    return signal
+
+
 def hz_to_midi(hz: np.ndarray) -> np.ndarray:
     """
     Converts from Hz to linear pitch space, where midi:69 = A440.
