@@ -4,7 +4,7 @@ import crepe
 import os
 
 from scipy.io import wavfile
-from scipy.signal import lfilter
+from scipy.signal import lfilter, medfilt
 from src.defaults import PICKLE_PATH, FIG_PATH, AUDIO_TEST_PATH
 from src.oscillators import AdditiveOsc, Blit
 from src.util import *
@@ -52,6 +52,7 @@ plt.plot(t, datum['frequency'], label='orig')
 for osc in oscs:
 
     pitch = datum['frequency']
+    pitch = medfilt(pitch, 5)
     # pitch = hz_to_midi(pitch)
     # pitch = repitch(pitch, 48)
     # pitch = add_fade(pitch, 0.125, rate=PITCH_RATE)
