@@ -139,6 +139,7 @@ dmypy.json
 *.pickle
 *.png
 *.pdf
+*.zip
 
 # Please use Jupytext to auto-convert jupyter notebooks to
 # python.
