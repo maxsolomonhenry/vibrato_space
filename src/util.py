@@ -1,10 +1,19 @@
 # Misc. utilities as needed.
 
 import librosa.display
+import os
+import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 from src.defaults import EPS, SAMPLE_RATE, PITCH_RATE
 from scipy.signal import hilbert, resample
+
+
+def remove_dc(x: np.ndarray) -> np.ndarray:
+    """
+    Remove mean from signal.
+    """
+    return x - np.mean(x)
 
 
 def normalize(x: np.ndarray) -> np.ndarray:
@@ -163,3 +172,10 @@ def fix_deviation(input_: np.ndarray, std: float):
     current_std = np.std(input_)
     input_ = input_ / current_std * std
     return input_ + mean
+
+
+def load_data(path: str):
+    assert os.path.isfile(path), 'Missing pickle. Run analysis.py'
+
+    with open(path, 'rb') as handle:
+        return pickle.load(handle)
