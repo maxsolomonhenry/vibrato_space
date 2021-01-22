@@ -17,8 +17,8 @@ from scipy.io import wavfile
 from librosa.core import lpc
 from tqdm import tqdm
 
-from src.defaults import PITCH_RATE, PICKLE_PATH, RAW_AUDIO_PATH
-from src.util import (
+from vibratospace.src.defaults import PITCH_RATE, PICKLE_PATH, RAW_AUDIO_PATH
+from vibratospace.src.util import (
     normalize,
     force_mono,
     trim_excerpt,
