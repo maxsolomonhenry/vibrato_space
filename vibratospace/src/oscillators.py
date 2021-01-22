@@ -1,6 +1,6 @@
 import numpy as np
-from src.defaults import SAMPLE_RATE, EPS
-from src.util import normalize, fix_length
+from vibratospace.src.defaults import SAMPLE_RATE, EPS
+from vibratospace.src.util import normalize, fix_length
 
 
 class Blit:

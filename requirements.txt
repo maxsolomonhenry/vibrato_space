@@ -1,0 +1,6 @@
+scipy==1.4.1
+numpy==1.18.1
+tqdm==4.46.0
+crepe==0.0.11
+matplotlib==3.2.1
+librosa==0.7.2

@@ -2,13 +2,21 @@
 
 import glob
 import os
+import numpy as np
+import matplotlib.pyplot as plt
 from librosa.core import lpc
 from scipy.io import wavfile
 from scipy.signal import lfilter, freqz
 
-from src.util import *
-from src.defaults import SAMPLE_RATE
-from src.synthesis import Blit, AdditiveOsc
+from vibratospace.src.defaults import SAMPLE_RATE
+from vibratospace.src.oscillators import Blit, AdditiveOsc
+from vibratospace.src.util import (
+    force_mono,
+    normalize,
+    trim_silence,
+    time_plot,
+    stft_plot
+)
 
 PATH_TO_HERE = os.path.dirname(__file__)
 path_pattern = os.path.join(PATH_TO_HERE, '../audio/raw/**/*.wav')

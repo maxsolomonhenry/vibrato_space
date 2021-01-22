@@ -5,13 +5,12 @@
 
 """
 
-import numpy as np
 import os
 from scipy.signal import lfilter, medfilt
 from scipy.io import wavfile
-from src.averaging import get_average_ar_coefficients
-from src.oscillators import Blit, AdditiveOsc
-from src.util import (
+from vibratospace.src.averaging import get_average_ar_coefficients
+from vibratospace.src.oscillators import Blit, AdditiveOsc
+from vibratospace.src.util import (
     midi_to_hz,
     to_sample_rate,
     normalize,
@@ -22,11 +21,10 @@ from src.util import (
     load_data,
     remove_dc
 )
-from src.defaults import (
+from vibratospace.src.defaults import (
     PICKLE_PATH,
     PROCESSED_PATH,
     SAMPLE_RATE,
-    EPS,
     PITCH_RATE
 )
 
