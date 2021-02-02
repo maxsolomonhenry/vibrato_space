@@ -174,6 +174,13 @@ def fix_deviation(input_: np.ndarray, std: float):
     return input_ + mean
 
 
+def widen(input_: np.ndarray, widen_amount: float):
+    mean = np.mean(input_)
+    input_ -= mean
+    input_ *= widen_amount
+    return input_ + mean
+
+
 def load_data(path: str):
     assert os.path.isfile(path), 'Missing pickle. Run analysis.py'
 

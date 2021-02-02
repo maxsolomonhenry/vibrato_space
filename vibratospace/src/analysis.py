@@ -3,7 +3,7 @@
 
     TODO:   √ argparse hell.
             √ LPC analysis (add to dict?)
-            - add log.txt
+            - add log.txt (?)
             - suppress warnings
 """
 

@@ -5,12 +5,16 @@ import os
 from scipy.io import wavfile
 from scipy.signal import lfilter, medfilt
 
-from vibratospace.src.defaults import PICKLE_PATH, FIG_PATH, AUDIO_TEST_PATH, SAMPLE_RATE, PITCH_RATE
+from vibratospace.src.defaults import (PICKLE_PATH, FIG_PATH, AUDIO_TEST_PATH,
+                                       SAMPLE_RATE, PITCH_RATE)
 from vibratospace.src.oscillators import AdditiveOsc, Blit
-from vibratospace.src.upsample import linear, quadratic, cubic, next_, prev_, nearest
+from vibratospace.tests.upsample import (linear, quadratic, cubic, next_, prev_,
+                                         nearest)
 from vibratospace.src.util import load_data, add_fade, to_sample_rate, normalize
 
 data = load_data(PICKLE_PATH)
+
+filter_kernelsize = 3
 
 # Grab an arbitrary sound sample.
 datum = data[int(np.round(np.random.rand()*len(data)))]
@@ -42,8 +46,8 @@ oscs = [
 
 interps = [
     {'func': linear, 'name': 'linear'},
-    # {'func': quadratic, 'name': 'quadratic'},
-    # {'func': cubic, 'name': 'cubic'},
+    {'func': quadratic, 'name': 'quadratic'},
+    {'func': cubic, 'name': 'cubic'},
     {'func': next_, 'name': 'next'},
     {'func': prev_, 'name': 'previous'},
     {'func': nearest, 'name': 'nearest'},
@@ -58,13 +62,14 @@ t = np.linspace(
     endpoint=False
 )
 
-plt.plot(t, datum['frequency'], label='orig')
+# Apply median filter to main pitch trajectory.
+plt.plot(t, medfilt(datum['frequency'], filter_kernelsize), label='orig')
 
 for interp in interps:
     for osc in oscs:
 
         pitch = datum['frequency']
-        # pitch = medfilt(pitch, 5)
+        pitch = medfilt(pitch, filter_kernelsize)
         # pitch = hz_to_midi(pitch)
         # pitch = repitch(pitch, 48)
         # pitch = add_fade(pitch, 0.125, rate=PITCH_RATE)
