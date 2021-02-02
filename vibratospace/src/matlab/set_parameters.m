@@ -21,7 +21,7 @@ mf = 3;
 nT0 = 3;
 
 % Normalize analysis window
-normflag = false;
+normflag = true;
 
 % Use zero phase window
 zphflag = true;
