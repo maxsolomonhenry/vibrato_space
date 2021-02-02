@@ -12,13 +12,13 @@ PITCH_RATE = 100
 EPS = 1e-6
 
 # Pickle filename for saving data.
-PICKLE_PATH = '../../data/data.pickle'
+DATA_PATH = '../../data/'
 
 # Path for processed audio.
 PROCESSED_PATH = '../../audio/processed/'
 
 # Path for raw audio (to be analyzed, re-synthesized).
-RAW_AUDIO_PATH = '../audio/raw/**/*.wav'
+RAW_AUDIO_PATH = '../../audio/raw/**/*.wav'
 
 # Path for figures.
 FIG_PATH = '../../figs/'

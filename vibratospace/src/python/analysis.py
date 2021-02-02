@@ -18,8 +18,8 @@ from librosa.core import lpc
 from tqdm import tqdm
 
 from vibratospace.src.python.defaults import (
+    DATA_PATH,
     PITCH_RATE,
-    PICKLE_PATH,
     RAW_AUDIO_PATH
 )
 from vibratospace.src.python.util import (
@@ -112,7 +112,10 @@ for path in tqdm(file_paths):
 if args.DEBUG:
     plt.show()
 
+pickle_path = os.path.join(DATA_PATH, 'data.pickle')
+pickle_path = os.path.abspath(pickle_path)
+
 if args.make_pickle:
-    print('Saving pickle at {}'.format(PICKLE_PATH))
-    with open(PICKLE_PATH, 'wb') as handle:
+    print('Saving pickle at {}'.format(pickle_path))
+    with open(pickle_path, 'wb') as handle:
         pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)

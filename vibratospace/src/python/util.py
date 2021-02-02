@@ -5,6 +5,7 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
+from typing import Tuple
 from vibratospace.src.python.defaults import EPS, SAMPLE_RATE, PITCH_RATE
 from scipy.signal import hilbert, resample
 
@@ -44,7 +45,7 @@ def force_mono(signal: np.ndarray) -> np.ndarray:
     return signal
 
 
-def fix_length(signal: np.array, length: int) -> np.array:
+def fix_length(signal: np.ndarray, length: int) -> np.ndarray:
     """
     Pad or truncate array to specified length.
     """
@@ -56,6 +57,17 @@ def fix_length(signal: np.array, length: int) -> np.array:
         signal = signal[:length]
     assert signal.shape == (length,)
     return signal
+
+
+def match_length(x1: np.ndarray, x2: np.ndarray) -> Tuple[np.array, np.array]:
+
+    if len(x1) == len(x2):
+        pass
+    elif len(x1) < len(x2):
+        x2 = fix_length(x2, len(x1))
+    else:
+        x1 = fix_length(x1, len(x2))
+    return x1, x2
 
 
 def hz_to_midi(hz: np.ndarray) -> np.ndarray:
