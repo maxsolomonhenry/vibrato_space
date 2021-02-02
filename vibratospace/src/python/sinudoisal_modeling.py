@@ -1,5 +1,5 @@
-from vibratospace.src.defaults import PICKLE_PATH
-from vibratospace.src.util import load_data
+from vibratospace.src.python.defaults import PICKLE_PATH
+from vibratospace.src.python.util import load_data
 import matlab.engine
 
 data = load_data(PICKLE_PATH)

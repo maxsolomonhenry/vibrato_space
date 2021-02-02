@@ -5,7 +5,7 @@ import os
 import pickle
 import numpy as np
 import matplotlib.pyplot as plt
-from vibratospace.src.defaults import EPS, SAMPLE_RATE, PITCH_RATE
+from vibratospace.src.python.defaults import EPS, SAMPLE_RATE, PITCH_RATE
 from scipy.signal import hilbert, resample
 
 

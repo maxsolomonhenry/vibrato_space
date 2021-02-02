@@ -9,9 +9,9 @@ import os
 import numpy as np
 from scipy.signal import lfilter, medfilt
 from scipy.io import wavfile
-from vibratospace.src.averaging import get_average_ar_coefficients
-from vibratospace.src.oscillators import Blit, AdditiveOsc
-from vibratospace.src.util import (
+from vibratospace.src.python.averaging import get_average_ar_coefficients
+from vibratospace.src.python.oscillators import Blit, AdditiveOsc
+from vibratospace.src.python.util import (
     midi_to_hz,
     to_sample_rate,
     normalize,
@@ -23,7 +23,7 @@ from vibratospace.src.util import (
     remove_dc,
     widen
 )
-from vibratospace.src.defaults import (
+from vibratospace.src.python.defaults import (
     PICKLE_PATH,
     PROCESSED_PATH,
     SAMPLE_RATE,

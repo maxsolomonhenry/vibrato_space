@@ -1,29 +1,9 @@
-% Rather nasty work-around
-PICKLE_PATH = '/Users/maxsolomonhenry/Documents/Python/vibrato_space/vibratospace/data/data.pickle';
-SM_PATH = '/Users/maxsolomonhenry/Documents/MATLAB/sinusoidal-model';
-
-% Load SM library.
-addpath(genpath(SM_PATH));
-
-% Load pickle.
-fid = py.open(PICKLE_PATH, 'rb');
-data = py.pickle.load(fid);
-
-hold on;
-
-for k = 1:length(data)
-	temp = data{k}{'frequency'};
-	plot(temp);
-end
-
-hold off;
-
+%
+% Prelimiary script for sinusoidal-model settings.
+%
 
 % Hann analysis window
 winflag = 3;
-
-% Display name of analysis window in the terminal
-fprintf(1,'%s analysis window\n',infowin(winflag,'name'));
 
 % Flag for center of first window
 cfwflag = {'nhalf','one','half'};
@@ -41,7 +21,7 @@ mf = 3;
 nT0 = 3;
 
 % Normalize analysis window
-normflag = true;
+normflag = false;
 
 % Use zero phase window
 zphflag = true;
@@ -70,3 +50,18 @@ rf = 2;
 
 % Display flag
 dispflag = true;
+
+% Assume vibrato frequency of 6 Hz.
+f0 = 6;
+
+% Frame size = n*T0
+[framelen,ref0] = framesize(f0,fs,nT0);
+
+% 50% overlap
+hop = hopsize(framelen,0.5);
+
+% FFT size
+nfft = fftsize(framelen);
+
+% Frequency difference for peak matching (Hz)
+delta = fix(ref0/2);
