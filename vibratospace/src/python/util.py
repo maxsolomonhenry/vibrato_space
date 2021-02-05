@@ -3,9 +3,10 @@
 import librosa.display
 import os
 import pickle
+import matlab
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Tuple
+from typing import Union, Tuple
 from vibratospace.src.python.defaults import EPS, SAMPLE_RATE, PITCH_RATE
 from scipy.signal import hilbert, resample
 
@@ -198,3 +199,17 @@ def load_data(path: str):
 
     with open(path, 'rb') as handle:
         return pickle.load(handle)
+
+
+def np2matlab(input_: np.ndarray):
+    # Convert numpy array to Matlab double.
+    return matlab.double(input_.tolist())[0]
+
+
+def matlab2np(input_: matlab.double):
+    # Convert Matlab double to numpy array.
+    return np.array(input_._data)
+
+
+def num2matlab(input_: Union[float, int]):
+    return matlab.double([input_])

@@ -25,3 +25,11 @@ FIG_PATH = '../../figs/'
 
 # Path for audio test outputs.
 AUDIO_TEST_PATH = '../../audio/tests/'
+
+# Path to MATLAB scripts within this project.
+MATLAB_SCRIPT_PATH = '../matlab/'
+
+# Path for MATLAB sinusoidal model.
+# http://github.com/marcelo-caetano/sinusoidal-model/
+SM_PATH = '/Users/maxsolomonhenry/Documents/MATLAB/sinusoidal-model'
+
