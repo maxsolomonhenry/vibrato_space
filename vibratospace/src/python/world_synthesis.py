@@ -65,32 +65,45 @@ if __name__ == '__main__':
     eng.addpath(os.path.realpath(MATLAB_SCRIPT_PATH))
 
     # Synthesis parameters.
-    repitch_note = 50
+    repitch_note = None  # 50
     audio_fade = .25
-    pitch_std = 10
-    num_partials = 100
+    pitch_std = None  # 10
+    num_partials = 1
 
     for datum in data:
         filename = datum['filename']
         pitch = datum['frequency']
         sp = datum['sp']
+
         ap = datum['ap']
         sample_rate = datum['sample_rate']
 
         pitch = hz_to_midi(pitch)
         pitch = sine_model_resynth(pitch, PITCH_RATE, num_partials, SM_PATH)
 
-        # pitch = repitch(pitch, repitch_note)
-        # pitch = fix_deviation(pitch, 0)
+        # Label filename with synthesis parameters.
+        file_prefix = "proc__"
+
+        # Synthesis flags.
+        if repitch_note:
+            pitch = repitch(pitch, repitch_note)
+            file_prefix += "repitch_"
+        if pitch_std:
+            pitch = fix_deviation(pitch, pitch_std)
+            file_prefix += "std_"
+
         pitch = midi_to_hz(pitch)
 
         # Re-synthesize with WORLD.
         audio = pw.synthesize(pitch, sp, ap, sample_rate)
         audio = remove_dc(audio)
         audio = normalize(audio)
-        audio = add_fade(audio, audio_fade, rate=sample_rate)
 
-        synthesis_filename = 'world_resynth__' + filename
+        if audio_fade:
+            audio = add_fade(audio, audio_fade, rate=sample_rate)
+            file_prefix += "audfade_"
+
+        synthesis_filename = file_prefix + filename
         print('Writing {}...'.format(synthesis_filename))
         write_path = os.path.join(AUDIO_TEST_PATH, synthesis_filename)
         wavfile.write(write_path, sample_rate, audio)
