@@ -55,8 +55,8 @@ if __name__ == "__main__":
     # Tests.
 
     import matplotlib.pyplot as plt
-    from src.util import load_data
-    from src.defaults import PICKLE_PATH
+    from vibratospace.src.util import load_data
+    from vibratospace.src.defaults import PICKLE_PATH
 
     data = load_data(PICKLE_PATH)
     batch_coefficients = [d['lpc'] for d in data]

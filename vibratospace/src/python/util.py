@@ -3,9 +3,11 @@
 import librosa.display
 import os
 import pickle
+import matlab
 import numpy as np
 import matplotlib.pyplot as plt
-from vibratospace.src.defaults import EPS, SAMPLE_RATE, PITCH_RATE
+from typing import Union, Tuple
+from vibratospace.src.python.defaults import EPS, SAMPLE_RATE, PITCH_RATE
 from scipy.signal import hilbert, resample
 
 
@@ -44,7 +46,7 @@ def force_mono(signal: np.ndarray) -> np.ndarray:
     return signal
 
 
-def fix_length(signal: np.array, length: int) -> np.array:
+def fix_length(signal: np.ndarray, length: int) -> np.ndarray:
     """
     Pad or truncate array to specified length.
     """
@@ -56,6 +58,17 @@ def fix_length(signal: np.array, length: int) -> np.array:
         signal = signal[:length]
     assert signal.shape == (length,)
     return signal
+
+
+def match_length(x1: np.ndarray, x2: np.ndarray) -> Tuple[np.array, np.array]:
+
+    if len(x1) == len(x2):
+        pass
+    elif len(x1) < len(x2):
+        x2 = fix_length(x2, len(x1))
+    else:
+        x1 = fix_length(x1, len(x2))
+    return x1, x2
 
 
 def hz_to_midi(hz: np.ndarray) -> np.ndarray:
@@ -174,8 +187,29 @@ def fix_deviation(input_: np.ndarray, std: float):
     return input_ + mean
 
 
+def widen(input_: np.ndarray, widen_amount: float):
+    mean = np.mean(input_)
+    input_ -= mean
+    input_ *= widen_amount
+    return input_ + mean
+
+
 def load_data(path: str):
     assert os.path.isfile(path), 'Missing pickle. Run analysis.py'
 
     with open(path, 'rb') as handle:
         return pickle.load(handle)
+
+
+def np2matlab(input_: np.ndarray):
+    # Convert numpy array to Matlab double.
+    return matlab.double(input_.tolist())[0]
+
+
+def matlab2np(input_: matlab.double):
+    # Convert Matlab double to numpy array.
+    return np.array(input_._data)
+
+
+def num2matlab(input_: Union[float, int]):
+    return matlab.double([input_])
