@@ -1,4 +1,8 @@
 """
+
+DEPRECATED: Use `analysis.py`.
+
+
 Uses the WORLD algorithm to generate f0 and spectral envelope.
 
 The script will scan all audio in the `RAW_AUDIO_PATH` directory (and
@@ -10,8 +14,6 @@ M. Morise, F. Yokomori, and K. Ozawa, ``WORLD: a vocoder-based high-quality
     speech synthesis system for real-time applications,'' IEICE transactions on
     information and systems, vol. E99-D, no. 7, pp. 1877-1884, 2016.
 """
-
-# TODO: factor analysis from both scripts?
 
 import glob
 import os
@@ -27,9 +29,7 @@ from vibratospace.src.python.defaults import (
 )
 from vibratospace.src.python.util import (
     force_mono,
-    match_length,
     normalize,
-    time_plot,
     trim_excerpt,
     trim_silence
 )

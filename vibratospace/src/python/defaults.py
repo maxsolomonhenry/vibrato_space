@@ -1,5 +1,5 @@
 """
-    Globals.
+Globals.
 """
 
 # Audio sample rate for synthesis.

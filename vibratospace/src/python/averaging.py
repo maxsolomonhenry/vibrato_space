@@ -1,5 +1,8 @@
 """
-    Generate an average spectrum given a bunch of AR coefficients.
+Generate an average spectrum given a list of AR coefficients.
+
+Because interpolation has to happen in the spectral domain, this takes a bit of
+finagling and its not as simple as it would seem.
 """
 
 import numpy as np
@@ -55,10 +58,14 @@ if __name__ == "__main__":
     # Tests.
 
     import matplotlib.pyplot as plt
-    from vibratospace.src.util import load_data
-    from vibratospace.src.defaults import PICKLE_PATH
+    import os
+    from vibratospace.src.python.util import load_data
+    from vibratospace.src.python.defaults import DATA_PATH
 
-    data = load_data(PICKLE_PATH)
+    pickle_path = os.path.join(DATA_PATH, 'data.pickle')
+    pickle_path = os.path.abspath(pickle_path)
+    data = load_data(pickle_path)
+
     batch_coefficients = [d['lpc'] for d in data]
 
     average_coefficients = get_average_ar_coefficients(batch_coefficients)

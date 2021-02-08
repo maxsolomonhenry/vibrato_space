@@ -1,3 +1,7 @@
+"""
+Oscillators for use in pitch trajectory re-synthesis.
+"""
+
 import numpy as np
 from vibratospace.src.python.defaults import SAMPLE_RATE, EPS
 from vibratospace.src.python.util import normalize, fix_length

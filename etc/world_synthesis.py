@@ -1,4 +1,6 @@
 """
+DEPRECATED. Use `synthesis.py` with the 'world' option.
+
 Reads .pickle file containing WORLD analysis data, manipulates signals, and
 re-synthesizes.
 
