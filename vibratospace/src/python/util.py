@@ -1,4 +1,6 @@
-# Misc. utilities as needed.
+"""
+Utilities for pitch trajectory analysis and resynthesis.
+"""
 
 import librosa.display
 import os
