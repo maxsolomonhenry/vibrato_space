@@ -68,7 +68,7 @@ if __name__ == '__main__':
     repitch_note = None  # 50
     audio_fade = .25
     pitch_std = None  # 10
-    num_partials = 1
+    num_partials = 2
 
     for datum in data:
         filename = datum['filename']
