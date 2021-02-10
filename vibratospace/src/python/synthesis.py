@@ -31,6 +31,7 @@ from vibratospace.src.python.util import (
     add_fade,
     fix_deviation,
     get_date_time,
+    high_pass,
     hz_to_midi,
     load_data,
     matlab2np,
@@ -78,11 +79,11 @@ if __name__ == '__main__':
         help='Specify synthesis engine: [\'blit\', \'additive\', \'world\'].'
     )
     parser.add_argument(
-        '-m',
-        '--median_filter_size',
+        '-hp',
+        '--high_pass_frequency',
         type=int,
         default=None,
-        help='Median filter kernel size.'
+        help='Cutoff frequency to remove jitter during processing.'
     )
     parser.add_argument(
         '-d',
@@ -138,7 +139,7 @@ if __name__ == '__main__':
     synth_engine = args.synth_engine
     assert synth_engine in ['blit', 'additive', 'world'], "Unrecognized engine."
 
-    median_filter_size = args.median_filter_size
+    high_pass_frequency = args.high_pass_frequency
     pitch_std = args.pitch_std
     pitch_widen = args.pitch_widen
     audio_fade = args.audio_fade
@@ -192,8 +193,8 @@ if __name__ == '__main__':
             pitch = repitch(pitch, repitch_note)
 
         # Remove and store jitter during pitch manipulation.
-        if median_filter_size:
-            jitter = pitch - medfilt(pitch, median_filter_size)
+        if high_pass_frequency:
+            jitter = high_pass(pitch, high_pass_frequency)
             pitch -= jitter
 
         if pitch_std:
@@ -202,9 +203,9 @@ if __name__ == '__main__':
         if pitch_widen:
             pitch = widen(pitch, pitch_widen)
 
-        # # Reintroduce jitter.
-        # if median_filter_size:
-        #     pitch += jitter
+        # Reintroduce jitter.
+        if high_pass_frequency:
+            pitch += jitter
 
         pitch = midi_to_hz(pitch)
 
