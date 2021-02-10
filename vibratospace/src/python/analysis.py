@@ -94,7 +94,6 @@ if __name__ == '__main__':
     file_paths = glob.glob(path_pattern)
     assert file_paths, "Could not find any files matching:\t{}".format(path_pattern)
 
-
     data = []
 
     for path in tqdm(file_paths):

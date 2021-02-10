@@ -6,11 +6,12 @@ import librosa.display
 import os
 import pickle
 import matlab
+from datetime import datetime
 import numpy as np
 import matplotlib.pyplot as plt
 from typing import Union, Tuple
 from vibratospace.src.python.defaults import EPS, SAMPLE_RATE, PITCH_RATE
-from scipy.signal import hilbert, resample
+from scipy.signal import butter, filtfilt, hilbert, resample
 
 
 def remove_dc(x: np.ndarray) -> np.ndarray:
@@ -77,7 +78,7 @@ def hz_to_midi(hz: np.ndarray) -> np.ndarray:
     """
     Converts from Hz to linear pitch space, where midi:69 = A440.
     """
-    return 12 * np.log2((hz + EPS)/440) + 69
+    return np.maximum(0, 12 * np.log2((hz + EPS)/440) + 69)
 
 
 def midi_to_hz(midi: np.ndarray) -> np.ndarray:
@@ -108,7 +109,7 @@ def add_fade(
     num_samples = int(fade_length * rate)
 
     # Build ramp.
-    t = np.linspace(0, 0.5, num_samples, endpoint=False)
+    t = np.linspace(0, 0.5, num_samples, endpoint=True)
     ramp = 0.5 * np.cos(2 * np.pi * t) + 0.5
 
     mean = np.mean(signal)
@@ -215,3 +216,17 @@ def matlab2np(input_: matlab.double):
 
 def num2matlab(input_: Union[float, int]):
     return matlab.double([input_])
+
+
+def get_date_time():
+    now = datetime.now()
+    return now.strftime("%d/%m/%Y %H:%M:%S")
+
+
+def high_pass(signal: np.ndarray, frequency: float, order: int = 16):
+    """
+    Convenience function for butterworth highpass filter.
+    """
+    Wn = frequency/(PITCH_RATE / 2)
+    [b, a] = butter(order, Wn, btype='highpass')
+    return filtfilt(b, a, signal)

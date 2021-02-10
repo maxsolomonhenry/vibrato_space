@@ -6,7 +6,7 @@ Globals.
 SAMPLE_RATE = 44100
 
 # CREPE sample rate in Hz.
-PITCH_RATE = 100
+PITCH_RATE = 200
 
 # Small value to avoid log(0).
 EPS = 1e-6
