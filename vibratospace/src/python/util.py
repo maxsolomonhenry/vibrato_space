@@ -28,11 +28,18 @@ def normalize(x: np.ndarray) -> np.ndarray:
     return x/np.max(np.abs(x))
 
 
-def time_plot(signal: np.ndarray, rate: int = 44100, show: bool = True):
+def time_plot(
+        signal: np.ndarray,
+        rate: int = 44100,
+        show: bool = True,
+        title: str = None
+):
     t = np.linspace(0, len(signal)/rate, len(signal), endpoint=False)
     plt.plot(t, signal)
     plt.xlabel('time (s)')
     plt.ylabel('amplitude')
+    if title:
+        plt.title(title)
     if show:
         plt.show()
 
@@ -223,10 +230,23 @@ def get_date_time():
     return now.strftime("%d/%m/%Y %H:%M:%S")
 
 
-def high_pass(signal: np.ndarray, frequency: float, order: int = 16):
+def high_pass(
+        signal: np.ndarray,
+        frequency: float,
+        sample_rate: int = PITCH_RATE,
+        order: int = 16
+):
     """
     Convenience function for butterworth highpass filter.
     """
-    Wn = frequency/(PITCH_RATE / 2)
+    Wn = frequency/(sample_rate / 2)
     [b, a] = butter(order, Wn, btype='highpass')
     return filtfilt(b, a, signal)
+
+
+def flatten(signal: np.ndarray) -> np.ndarray:
+    """
+    Replace an array values with its mean.
+    """
+    mean_ = np.mean(signal)
+    return np.tile(mean_, len(signal))

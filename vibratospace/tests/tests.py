@@ -8,9 +8,9 @@ from librosa.core import lpc
 from scipy.io import wavfile
 from scipy.signal import lfilter, freqz
 
-from vibratospace.src.defaults import SAMPLE_RATE
-from vibratospace.src.oscillators import Blit, AdditiveOsc
-from vibratospace.src.util import (
+from vibratospace.src.python.defaults import SAMPLE_RATE
+from vibratospace.src.python.oscillators import Blit, AdditiveOsc
+from vibratospace.src.python.util import (
     force_mono,
     normalize,
     trim_silence,

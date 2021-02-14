@@ -5,14 +5,16 @@ import os
 from scipy.io import wavfile
 from scipy.signal import lfilter, medfilt
 
-from vibratospace.src.defaults import (PICKLE_PATH, FIG_PATH, AUDIO_TEST_PATH,
-                                       SAMPLE_RATE, PITCH_RATE)
-from vibratospace.src.oscillators import AdditiveOsc, Blit
+from vibratospace.src.python.defaults import (DATA_PATH, FIG_PATH,
+                                              AUDIO_TEST_PATH, SAMPLE_RATE,
+                                              PITCH_RATE)
+from vibratospace.src.python.oscillators import AdditiveOsc, Blit
 from vibratospace.tests.upsample import (linear, quadratic, cubic, next_, prev_,
                                          nearest)
-from vibratospace.src.util import load_data, add_fade, to_sample_rate, normalize
+from vibratospace.src.python.util import (load_data, add_fade, to_sample_rate,
+                                          normalize)
 
-data = load_data(PICKLE_PATH)
+data = load_data(os.path.join(DATA_PATH, 'data.pickle'))
 
 filter_kernelsize = 3
 
