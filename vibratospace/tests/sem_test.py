@@ -15,7 +15,7 @@ if __name__ == '__main__':
         os.path.join(DATA_PATH, 'data.pickle')
     )
 
-    for k in range(0, 15, 5):
+    for k in range(1):
         datum = data[k]
         f0 = datum['crepe_f0']
         mean_ = np.mean(f0)
@@ -29,11 +29,11 @@ if __name__ == '__main__':
 
         for which_peak in range(6):
             peak_f0 = f0[peaks[which_peak]]
-            valley_f0 = f0[valleys[which_peak]]
-            mid_f0 = (peak_f0 * valley_f0) ** 1/2
+            valley_f0 = f0[valleys[which_peak + 1]]
+            mid_f0 = (peak_f0 * valley_f0) ** (1/2)
 
             peak_ = peaks[which_peak] / PITCH_RATE * SAMPLE_RATE
-            valley_ = valleys[which_peak] / PITCH_RATE * SAMPLE_RATE
+            valley_ = valleys[which_peak + 1] / PITCH_RATE * SAMPLE_RATE
             mid_ = np.mean([peak_, valley_])
 
             peak_ = int(round(peak_))
@@ -42,18 +42,31 @@ if __name__ == '__main__':
 
             half_peak_length = int(1.5 * (1/peak_f0) * SAMPLE_RATE)
             half_valley_length = int(1.5 * (1/valley_f0) * SAMPLE_RATE)
+            half_mid_length = int(1.5 * (1 / mid_f0) * SAMPLE_RATE)
 
-            peak_idx = np.linspace(-half_peak_length, half_peak_length, dtype=int) + peak_
-            valley_idx = np.linspace(-half_valley_length, half_valley_length, dtype=int) + valley_
+            # half_peak_length = 4096
+            # half_valley_length = 4096
+            # half_mid_length = 4096
+
+            peak_idx = np.arange(-half_peak_length, half_peak_length + 1, dtype=int) + peak_
+            valley_idx = np.arange(-half_valley_length, half_valley_length + 1,
+                                     dtype=int) + valley_
+            mid_idx = np.arange(-half_mid_length, half_mid_length + 1, dtype=int) + mid_
 
             peak_frame = datum['audio'][peak_idx] * np.hanning(peak_idx.shape[0])
             valley_frame = datum['audio'][valley_idx] * np.hanning(valley_idx.shape[0])
+            mid_frame = datum['audio'][mid_idx] * np.hanning(mid_idx.shape[0])
 
             spec_peak = np.fft.fft(peak_frame, next_power_of_2(len(peak_frame) * 4))
             spec_valley = np.fft.fft(valley_frame, next_power_of_2(len(valley_frame) * 4))
+            spec_mid = np.fft.fft(mid_frame, next_power_of_2(len(mid_frame) * 4))
 
-            time_plot(np.abs(spec_peak), title=datum['filename'], show=False)
-            time_plot(np.abs(spec_valley))
+            plt.subplot(6, 1, which_peak + 1)
+            time_plot(np.abs(spec_peak[:500]), title=datum['filename'], show=False)
+            time_plot(np.abs(spec_mid[:500]), title=datum['filename'], show=False)
+            time_plot(np.abs(spec_valley[:500]), show=False)
+
+        plt.show()
 
     # upsampled_f0 = to_sample_rate(f0)
     #
