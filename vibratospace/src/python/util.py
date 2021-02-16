@@ -211,6 +211,17 @@ def load_data(path: str):
         return pickle.load(handle)
 
 
+def save_data(path: str, data, force: bool = False):
+    if force is False:
+        assert not os.path.isfile(path), 'File {} already exists.'.format(
+            os.path.basename(path)
+        )
+
+    print('Saving file {}...'.format(os.path.basename(path)))
+    with open(path, 'wb') as handle:
+        pickle.dump(data, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+
 def np2matlab(input_: np.ndarray):
     # Convert numpy array to Matlab double.
     return matlab.double(input_.tolist())[0]

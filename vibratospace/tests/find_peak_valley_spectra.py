@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import os
 from scipy.signal import find_peaks
 from vibratospace.src.python.defaults import DATA_PATH, PITCH_RATE, SAMPLE_RATE
-from vibratospace.src.python.util import load_data, time_plot, to_sample_rate, high_pass
+from vibratospace.src.python.util import load_data, time_plot, to_sample_rate, high_pass, save_data
 
 
 def next_power_of_2(x):
@@ -11,9 +11,13 @@ def next_power_of_2(x):
 
 
 if __name__ == '__main__':
+    PLOTS = True
+
     data = load_data(
         os.path.join(DATA_PATH, 'data.pickle')
     )
+
+    spectra = []
 
     for k in range(1):
         datum = data[k]
@@ -40,9 +44,9 @@ if __name__ == '__main__':
             valley_ = int(round(valley_))
             mid_ = int(round(mid_))
 
-            half_peak_length = int(1.5 * (1/peak_f0) * SAMPLE_RATE)
-            half_valley_length = int(1.5 * (1/valley_f0) * SAMPLE_RATE)
-            half_mid_length = int(1.5 * (1 / mid_f0) * SAMPLE_RATE)
+            half_peak_length = int(3 * (1/peak_f0) * SAMPLE_RATE)
+            half_valley_length = int(3 * (1/valley_f0) * SAMPLE_RATE)
+            half_mid_length = int(3 * (1 / mid_f0) * SAMPLE_RATE)
 
             # half_peak_length = 4096
             # half_valley_length = 4096
@@ -57,21 +61,27 @@ if __name__ == '__main__':
             valley_frame = datum['audio'][valley_idx] * np.hanning(valley_idx.shape[0])
             mid_frame = datum['audio'][mid_idx] * np.hanning(mid_idx.shape[0])
 
-            spec_peak = np.fft.fft(peak_frame, next_power_of_2(len(peak_frame) * 4))
-            spec_valley = np.fft.fft(valley_frame, next_power_of_2(len(valley_frame) * 4))
-            spec_mid = np.fft.fft(mid_frame, next_power_of_2(len(mid_frame) * 4))
+            spec_peak = np.fft.fft(peak_frame, next_power_of_2(len(peak_frame)))
+            spec_valley = np.fft.fft(valley_frame, next_power_of_2(len(valley_frame)))
+            spec_mid = np.fft.fft(mid_frame, next_power_of_2(len(mid_frame)))
 
-            plt.subplot(6, 1, which_peak + 1)
-            time_plot(np.abs(spec_peak[:500]), title=datum['filename'], show=False)
-            time_plot(np.abs(spec_mid[:500]), title=datum['filename'], show=False)
-            time_plot(np.abs(spec_valley[:500]), show=False)
+            spectra.append(
+                {
+                    'filename': datum['filename'],
+                    'peak': spec_peak,
+                    'mid': spec_mid,
+                    'valley': spec_valley
+                }
+            )
 
-        plt.show()
+            if PLOTS:
+                plt.subplot(6, 1, which_peak + 1)
+                time_plot(np.abs(spec_peak[:500]), title=datum['filename'], show=False)
+                time_plot(np.abs(spec_mid[:500]), title=datum['filename'], show=False)
+                time_plot(np.abs(spec_valley[:500]), show=False)
 
-    # upsampled_f0 = to_sample_rate(f0)
-    #
-    # # time_plot(datum['audio'], SAMPLE_RATE, title=datum['filename'], show=False)
-    # time_plot(upsampled_f0, SAMPLE_RATE, show=False)
-    # plt.scatter(peaks, np.zeros(peaks.shape))
-    # plt.scatter(valleys, np.zeros(valleys.shape))
-    # plt.show()
+        if PLOTS:
+            plt.show()
+
+    path = os.path.join(DATA_PATH, 'peak_valley_spectra.pickle')
+    save_data(path, spectra, force=True)

@@ -71,18 +71,28 @@ class AdditiveOsc:
         Processing 14.4 (2006): 1292-1300.
     """
 
-    def __init__(self, num_harmonics: int, chunk_size: int = 1000):
+    def __init__(
+            self,
+            num_harmonics: int,
+            chunk_size: int = 1000,
+            randomize_phase: bool = True):
         assert 0 < num_harmonics, 'Must specify a positive number of harmonics.'
         self.num_harmonics = num_harmonics
 
         assert chunk_size > 50, "Chunk size must be greater than 50 samples."
         self.chunk_size = chunk_size
 
+        self.randomize_phase = randomize_phase
+
     def __call__(self, hz: np.ndarray) -> np.ndarray:
         phase = self.hz_to_phase(hz)
-        x = 0
+        x = 0.0
         for h in np.arange(1, self.num_harmonics + 1):
-            init_phase = np.random.rand() * 2 * np.pi
+            if self.randomize_phase:
+                init_phase = np.random.rand() * 2 * np.pi
+            else:
+                init_phase = 0
+
             x += np.cos(h * phase + init_phase)
         return normalize(x)
 

@@ -66,7 +66,7 @@ if __name__ == '__main__':
         '-a',
         '--lpc_order',
         type=int,
-        default=50,
+        default=80,
         help='The number of AR coefficients to predict.'
     )
     parser.add_argument(
