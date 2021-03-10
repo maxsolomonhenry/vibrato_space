@@ -1,76 +1,56 @@
-import os
+import IPython.display as ipd
+import matplotlib.pyplot as plt
 import numpy as np
+import os
 
-from vibratospace.src.python.defaults import DATA_PATH, SAMPLE_RATE, AUDIO_TEST_PATH
+from vibratospace.src.python.defaults import DATA_PATH, PITCH_RATE, SAMPLE_RATE
 from vibratospace.src.python.oscillators import AdditiveOsc, Blit
-from vibratospace.src.python.sem import EnvelopeInterpolator, FastConvolve
-from vibratospace.src.python.spectral_util import get_spectral_envelope
-from vibratospace.src.python.util import add_fade, load_data, midi_to_hz, normalize, time_plot
+from vibratospace.src.python.sem_engine import FastConvolve
+from vibratospace.src.python.util import load_data, midi_to_hz, stft_plot
+
+
+def half_to_full(spectrum):
+    """
+    Quick method to make symmetrical spectra from real-only spectra.
+    """
+    num_frames = spectrum.shape[0]
+
+    half_frame_size = spectrum.shape[1]
+    full_frame_size = (half_frame_size - 1) * 2
+
+    temp = np.zeros([num_frames, full_frame_size])
+    temp[:, :half_frame_size] = spectrum
+    temp[:, half_frame_size:] = np.flip(spectrum[:, 1:-1], axis=1)
+
+    return temp
+
 
 if __name__ == '__main__':
-    # Grab pre-calculated spectra.
-    path = os.path.join(DATA_PATH, 'peak_valley_spectra.pickle')
-    spectra = load_data(path)
+    data = load_data(os.path.join(DATA_PATH, 'data.pickle'))
 
-    peak = spectra[1]['peak']
-    valley = spectra[1]['valley']
+    # TODO: iterate through data.
+    datum = data[0]
 
-    peak_envelope = get_spectral_envelope(peak, lpc_order=120)
-    valley_envelope = get_spectral_envelope(valley, lpc_order=120)
-
-    # Parameters.
-    midi_note = 50.
-    dur = 2
-
-    env1 = peak_envelope
-    env2 = valley_envelope
-
-    hop_size = 512
-    num_bins = len(env1)
-
-    out_filename = 'test.wav'
-
-    # Synthesis...
-    additive = AdditiveOsc(num_harmonics=25, randomize_phase=True)
-    blit = Blit()
-
-    osc = blit
-
-    midi = np.tile(midi_note, dur * SAMPLE_RATE)
-    hz = midi_to_hz(midi)
-
-    excitation_signal = osc(hz)
-    # time_plot(excitation_signal)
-
-    # excitation_signal += 0.5 * np.random.rand(len(excitation_signal))
-
-    my_interp = EnvelopeInterpolator(env1, env2)
-
-    # 180 frames @ 512 samples per hop and 44100 Hz sample-rate => ~2 sec audio.
-    test_mod = np.cos(2 * np.pi * 7 * np.linspace(0, 2, 173))
-    test_mod = add_fade(test_mod, 0.6, SAMPLE_RATE//512)
-
-    envelopes = my_interp(test_mod)
-
-    import matplotlib.pyplot as plt
-    plt.imshow(envelopes, origin='lower', aspect='auto')
-    plt.show()
+    spectral_envelopes = datum['world']['sp']
+    spectral_envelopes = np.sqrt(spectral_envelopes)
+    spectral_envelopes = half_to_full(spectral_envelopes)
 
     my_convolve = FastConvolve(
-        frame_size=num_bins,
-        hop_size=hop_size,
-        debug=False
+        frame_size=spectral_envelopes.shape[1],
+        hop_size=spectral_envelopes.shape[1]//8
     )
-    out_ = my_convolve(excitation_signal, envelopes)
-    plt.plot(out_)
-    plt.show()
 
-    out_ -= np.mean(out_)
-    out_ = normalize(out_)
-    out_ = add_fade(out_, 0.25, SAMPLE_RATE)
+    blit = Blit()
+    additive = AdditiveOsc(num_harmonics=20)
+    f0 = midi_to_hz(50)
+    carrier = additive(np.tile(f0, int(SAMPLE_RATE * 1.75)))
 
-    from scipy.io import wavfile
+    x = my_convolve(carrier, spectral_envelopes)
 
-    path = os.path.join(AUDIO_TEST_PATH, out_filename)
+    display(ipd.Audio(x, rate=SAMPLE_RATE))
+    display(ipd.Audio(datum['audio'], rate=SAMPLE_RATE))
 
-    wavfile.write(path, SAMPLE_RATE, out_)
+    stft_plot(x)
+    stft_plot(datum['audio'])
+
+

@@ -1,4 +1,5 @@
 """
+    TODO: REMOVE ALPHA.
     The plan:
 
     Build a filter that takes two spectral envelopes of size N, and interpolates
@@ -22,25 +23,54 @@ from vibratospace.src.python.util import fix_length
 
 class EnvelopeInterpolator:
     """
-    The object is initialized with two spectral envelopes. At call, it accepts a
-    modulation signal [0, 1] for interpolating between the two envelopes.
+    The object is initialized with three spectral envelopes. At call, it accepts
+    a modulation signal [-1, 1] for interpolating between the three envelopes,
+    where -1 => env1, 0 => env2, and 1 => env3.
+
+    `alpha` determines the span of influence of the middle spectrum:
+
+    1   - linear cross-fading
+    <1  - middle spectrum has more influence
+    >1  - middle spectrum has less influence
     """
-    def __init__(self, env1: np.ndarray, env2: np.ndarray):
-        assert (env1.ndim == env2.ndim == 1), 'Envelopes must be 1d arrays.'
-        assert env1.size == env2.size, 'Envelopes must be the same length.'
+    def __init__(
+            self,
+            env1: np.ndarray,
+            env2: np.ndarray,
+            env3: np.ndarray = None,
+            alpha: float = 1
+    ):
+        assert (
+                env1.ndim == env2.ndim == 1
+        ), 'Envelopes must be 1d arrays.'
+        assert (
+                env1.size == env2.size
+        ), 'Envelopes must be the same length.'
+        assert alpha > 0, 'Positive alpha values only.'
+
+        if env3 is not None:
+            assert (env3.ndim == 1 and env3.size == env1.size)
 
         self.env1 = env1
         self.env2 = env2
+        self.env3 = env3
+        self.alpha = alpha
 
-    def __call__(self, modulator: np.ndarray) -> np.ndarray:
+    def __call__(
+            self,
+            modulator: np.ndarray,
+            emphasis: float = 1.0
+    ) -> np.ndarray:
         """
         Note: call accepts modulator signal at, presumably, frame-rate.
         """
         assert modulator.ndim == 1
-        assert 0 <= modulator.all() <= 1
+        assert -1 <= modulator.all() <= 1
+        assert emphasis > 0
 
         num_bins = self.env1.shape[0]
         num_frames = modulator.shape[0]
+        modulator *= emphasis
 
         out_ = np.zeros([num_bins, num_frames])
 
@@ -48,13 +78,26 @@ class EnvelopeInterpolator:
             out_[:, f] = self.interp_arrays(
                 self.env1,
                 self.env2,
+                self.env3,
                 val
             )
-        return out_
+        return np.maximum(0, out_)
 
-    @staticmethod
-    def interp_arrays(array1, array2, val):
-        return (1 - val) * array1 + val * array2
+    def interp_arrays(self, array1, array2, array3, val):
+        # c1 = np.maximum(0, 1 - (val + 1) ** self.alpha)
+        # c2 = (1 - np.abs(val)) ** self.alpha
+        # c3 = np.maximum(0, 1 - (1 - val) ** self.alpha)
+        if self.env3 is not None:
+            c1 = np.maximum(0, -val)
+            c2 = 1 - np.abs(val)
+            c3 = np.maximum(0, val)
+            answer = c1 * array1 + c2 * array2 + c3 * array3
+        else:
+            c1 = (1 - val)/2 * array1
+            c2 = (val + 1)/2 * array2
+            answer = c1 * array1 + c2 * array2
+
+        return answer
 
 
 class FastConvolve:
@@ -110,7 +153,7 @@ class FastConvolve:
         out_ = np.zeros(out_length)
         in_ = np.pad(in_, self.frame_size // 2)
 
-        window = np.hamming(self.frame_size)
+        # window = np.hamming(self.frame_size)
         impulse_taper = self.decaying_exponential(t0=self.frame_size, eps=1e-8)
 
         read_in = 0
@@ -121,7 +164,7 @@ class FastConvolve:
 
         for envelope in envelopes.T:
             x = copy.copy(in_[read_in:read_out])
-            x *= window
+            # x *= window
             X = np.fft.fft(x, self.frame_size * 2)
 
             envelope = self.condition_envelope(envelope, impulse_taper)
