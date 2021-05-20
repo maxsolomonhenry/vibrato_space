@@ -1,6 +1,6 @@
 # Vibrato Perceptual Space
 
-A collection of scripts for developing stimuli and running an experiment:
+An old collection of scripts for developing stimuli and running an experiment:
 ```
 .
 ├── LICENSE
